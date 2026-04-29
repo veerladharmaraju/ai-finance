@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+      --space-12: 3rem; --space-16: 4rem;
+
+      --color-bg: #f6f7fb;
+      --color-surface: #ffffff;
+      --color-surface-2: #f8faff;
+      --color-surface-offset: #eef3ff;
+      --color-border: #d9e1f2;
+      --color-divider: #e6ebf5;
+      --color-text: #122033;
+      --color-text-muted: #5d6b82;
+      --color-text-faint: #8c98ad;
+      --color-primary: #3158f4;
+      --color-primary-hover: #2446cb;
+      --color-primary-soft: #dfe7ff;
+      --color-success: #17854a;
+      --color-warning: #d58a00;
+      --color-danger: #c7385a;
+      --shadow-sm: 0 1px 2px rgba(18,32,51,.05);
+      --shadow-md: 0 10px 30px rgba(49,88,244,.12);
+      --shadow-lg: 0 20px 60px rgba(18,32,51,.12);
+      --radius-sm: 0.5rem;
+      --radius-md: 0.85rem;
+      --radius-lg: 1.2rem;
+      --radius-xl: 1.75rem;
+      --font-body: 'Satoshi', system-ui, sans-serif;
+      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #0f1726;
+      --color-surface: #131d2f;
+      --color-surface-2: #172338;
+      --color-surface-offset: #1b2941;
+      --color-border: #283652;
+      --color-divider: #23314c;
+      --color-text: #edf2ff;
+      --color-text-muted: #aeb9cf;
+      --color-text-faint: #7f8ba3;
+      --color-primary: #7d96ff;
+      --color-primary-hover: #9bacff;
+      --color-primary-soft: rgba(125,150,255,.12);
+      --color-success: #3ccf7a;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.25);
+      --shadow-md: 0 10px 30px rgba(0,0,0,.25);
+      --shadow-lg: 0 24px 60px rgba(0,0,0,.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at top right, rgba(49,88,244,.15), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(23,133,74,.10), transparent 25%),
+        var(--color-bg);
+      line-height: 1.6;
+    }
+    img, svg { display: block; max-width: 100%; }
+    button, input, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    button {
+      cursor: pointer;
+      border: 0;
+      transition: transform var(--transition), background var(--transition), box-shadow var(--transition), color var(--transition);
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    :focus-visible { outline: 3px solid rgba(49,88,244,.35); outline-offset: 2px; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+    }
+
+    .hero-panel {
+      position: relative;
+      padding: var(--space-8);
+      background: linear-gradient(180deg, rgba(49,88,244,.92), rgba(83,105,255,.85));
+      color: white;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-8);
+    }
+
+    .hero-panel::before,
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      filter: blur(2px);
+    }
+    .hero-panel::before { width: 260px; height: 260px; right: -60px; top: -30px; }
+    .hero-panel::after { width: 220px; height: 220px; left: -70px; bottom: -40px; }
+
+    .brand, .logo-wrap { display: flex; align-items: center; gap: var(--space-3); }
+    .brand { justify-content: space-between; position: relative; z-index: 2; }
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.16);
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(10px);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
+    }
+    .logo-wrap h1 { font-size: var(--text-lg); font-weight: 900; letter-spacing: -.02em; }
+    .muted-on-dark { color: rgba(255,255,255,.78); }
+
+    .theme-toggle {
+      width: 48px; height: 48px; border-radius: 14px; color: white;
+      background: rgba(255,255,255,.12); display: grid; place-items: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-copy { position: relative; z-index: 2; display: grid; gap: var(--space-5); }
+    .eyebrow {
+      width: fit-content;
+      padding: .45rem .8rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      font-size: var(--text-xs);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .hero-copy h2 {
+      font-size: clamp(2rem, 1.2rem + 2vw, 3.6rem);
+      line-height: 1.04;
+      letter-spacing: -.04em;
+      max-width: 10ch;
+    }
+    .hero-copy p { max-width: 34ch; color: rgba(255,255,255,.86); }
+
+    .stats-preview {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4);
+      position: relative;
+      z-index: 2;
+    }
+    .preview-card {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      backdrop-filter: blur(12px);
+    }
+    .preview-card strong { display: block; font-size: var(--text-xl); }
+    .preview-card span { color: rgba(255,255,255,.72); font-size: var(--text-sm); }
+
+    .content-panel {
+      padding: clamp(1rem, 3vw, 2rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .portal-card {
+      width: min(1100px, 100%);
+      min-height: min(760px, calc(100vh - 2rem));
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 30px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    [data-theme="dark"] .portal-card {
+      background: rgba(19,29,47,.82);
+      border-color: rgba(125,150,255,.12);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--color-divider);
+      background: color-mix(in srgb, var(--color-surface) 86%, transparent);
+    }
+    .topbar h3 { font-size: var(--text-lg); letter-spacing: -.02em; }
+    .topbar p { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+    .tab-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .tab-btn, .btn {
+      padding: .85rem 1.15rem;
+      border-radius: 14px;
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+    .tab-btn {
+      background: transparent;
+      color: var(--color-text-muted);
+      border: 1px solid transparent;
+    }
+    .tab-btn.active {
+      background: var(--color-primary-soft);
+      color: var(--color-primary);
+      border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+    }
+
+    .view { display: none; height: 100%; }
+    .view.active { display: block; }
+
+    .auth-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      min-height: 100%;
+    }
+    .form-side, .info-side { padding: clamp(1.2rem, 3vw, 2rem); }
+    .form-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: color-mix(in srgb, var(--color-surface) 84%, transparent);
+    }
+    .info-side {
+      background: linear-gradient(180deg, var(--color-surface-2), var(--color-surface-offset));
+      border-left: 1px solid var(--color-divider);
+      display: grid;
+      align-content: center;
+      gap: var(--space-5);
+    }
+
+    .form-card {
+      width: min(460px, 100%);
+      display: grid;
+      gap: var(--space-5);
+    }
+    .section-title { display: grid; gap: .35rem; }
+    .section-title h2 { font-size: var(--text-xl); letter-spacing: -.03em; }
+    .section-title p { color: var(--color-text-muted); }
+
+    .form-grid { display: grid; gap: var(--space-4); }
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+    .field { display: grid; gap: .45rem; }
+    .field label { font-size: var(--text-sm); font-weight: 700; color: var(--color-text); }
+    .field input, .field select {
+      width: 100%;
+      padding: .95rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      box-shadow: var(--shadow-sm);
+    }
+    .field input::placeholder { color: var(--color-text-faint); }
+    .field input:focus, .field select:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 16%, transparent);
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+    .btn-secondary {
+      background: var(--color-surface-offset);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+    .helper-text { color: var(--color-text-muted); font-size: var(--text-sm); }
+    .status {
+      padding: .9rem 1rem;
+      border-radius: 14px;
+      font-size: var(--text-sm);
+      display: none;
+    }
+    .status.show { display: block; }
+    .status.success { background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface)); color: var(--color-success); }
+    .status.error { background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface)); color: var(--color-danger); }
+
+    .feature-list { display: grid; gap: var(--space-4); }
+    .feature-item {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+      border: 1px solid var(--color-border);
+    }
+    .feature-icon {
+      width: 42px; height: 42px; border-radius: 14px; flex: none;
+      display: grid; place-items: center;
+      background: var(--color-primary-soft); color: var(--color-primary);
+    }
+    .feature-item h4 { font-size: var(--text-base); }
+    .feature-item p { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+    .dashboard-layout {
+      height: 100%;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+    }
+    .sidebar {
+      border-right: 1px solid var(--color-divider);
+      background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+      padding: var(--space-6);
+      display: grid;
+      align-content: start;
+      gap: var(--space-6);
+    }
+    .student-badge {
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, var(--color-surface-offset), var(--color-surface));
+      border: 1px solid var(--color-border);
+    }
+    .student-badge h4 { font-size: var(--text-base); }
+    .student-badge p { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .side-link {
+      display: flex; align-items: center; gap: .8rem;
+      padding: .9rem 1rem; border-radius: 14px;
+      color: var(--color-text-muted); font-weight: 700;
+    }
+    .side-link.active { background: var(--color-primary-soft); color: var(--color-primary); }
+
+    .dashboard-main {
+      overflow-y: auto;
+      padding: var(--space-6);
+      display: grid;
+      gap: var(--space-6);
+      background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-surface-2) 45%, transparent));
+    }
+
+    .welcome-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-4);
+      padding: clamp(1rem, 2vw, 1.5rem);
+      border-radius: 24px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)), var(--color-surface));
+      border: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--color-border));
+    }
+    .welcome-card h2 { font-size: var(--text-xl); letter-spacing: -.03em; }
+    .welcome-card p { color: var(--color-text-muted); }
+    .pill {
+      padding: .55rem .9rem; border-radius: 999px; font-size: var(--text-xs); font-weight: 800;
+      background: var(--color-primary-soft); color: var(--color-primary); text-transform: uppercase; letter-spacing: .07em;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+    .stat-card, .panel {
+      background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+      border: 1px solid var(--color-border);
+      border-radius: 22px;
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-card span { color: var(--color-text-muted); font-size: var(--text-sm); }
+    .stat-card strong {
+      display: block; margin-top: .25rem; font-size: clamp(1.5rem, 1rem + 1vw, 2.3rem);
+      font-variant-numeric: tabular-nums lining-nums;
+      letter-spacing: -.03em;
+    }
+    .trend-up { color: var(--color-success); }
+    .trend-warn { color: var(--color-warning); }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: var(--space-5);
+    }
+    .panel-head {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .panel-head h3 { font-size: var(--text-lg); }
+    .subtext { color: var(--color-text-muted); font-size: var(--text-sm); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: .95rem .8rem; text-align: left; font-size: var(--text-sm); }
+    thead th { color: var(--color-text-muted); font-weight: 700; border-bottom: 1px solid var(--color-divider); }
+    tbody tr:not(:last-child) td { border-bottom: 1px solid var(--color-divider); }
+    tbody tr:hover { background: color-mix(in srgb, var(--color-primary) 4%, transparent); }
+    .score-badge {
+      padding: .35rem .65rem; border-radius: 999px; font-size: var(--text-xs); font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .grade-a { background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface)); color: var(--color-success); }
+    .grade-b { background: color-mix(in srgb, var(--color-primary) 14%, var(--color-surface)); color: var(--color-primary); }
+    .grade-c { background: color-mix(in srgb, var(--color-warning) 16%, var(--color-surface)); color: var(--color-warning); }
+
+    .subject-list { display: grid; gap: var(--space-3); }
+    .subject-card {
+      display: flex; justify-content: space-between; align-items: center; gap: var(--space-3);
+      padding: 1rem; border-radius: 18px; background: var(--color-surface-2); border: 1px solid var(--color-border);
+    }
+    .subject-card strong { display: block; }
+    .subject-card span { color: var(--color-text-muted); font-size: var(--text-sm); }
+
+    .progress-wrap { display: grid; gap: var(--space-4); }
+    .progress-row { display: grid; gap: .45rem; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: var(--text-sm); }
+    .progress-track {
+      height: 10px; border-radius: 999px; overflow: hidden; background: var(--color-surface-offset);
+    }
+    .progress-bar {
+      height: 100%; border-radius: inherit;
+      background: linear-gradient(90deg, var(--color-primary), #6e87ff);
+    }
+
+    @media (max-width: 1080px) {
+      .app-shell, .auth-grid, .dashboard-layout, .results-grid { grid-template-columns: 1fr; }
+      .hero-panel { min-height: 420px; }
+      .info-side { border-left: 0; border-top: 1px solid var(--color-divider); }
+      .sidebar { border-right: 0; border-bottom: 1px solid var(--color-divider); }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .content-panel { padding: 0; }
+      .portal-card { min-height: 100vh; border-radius: 0; }
+      .topbar { padding: 1rem; align-items: flex-start; flex-direction: column; }
+      .two-col, .stats-preview, .stats-grid { grid-template-columns: 1fr; }
+      .hero-panel { padding: 1.2rem; }
+      .dashboard-main, .sidebar, .form-side, .info-side { padding: 1rem; }
+      .welcome-card { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="hero-panel">
+      <div class="brand">
+        <div class="logo-wrap">
+          <div class="logo" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Student portal logo">
+              <path d="M3 8.5 12 4l9 4.5-9 4.5L3 8.5Z"></path>
+              <path d="M7 10.5V15c0 1.5 2.24 3 5 3s5-1.5 5-3v-4.5"></path>
+              <path d="M21 9v6"></path>
+            </svg>
+          </div>
+          <div>
+            <h1>CampusPulse</h1>
+            <p class="muted-on-dark">Student Result Portal</p>
+          </div>
+        </div>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+      </div>
+
+      <div class="hero-copy">
+        <span class="eyebrow">Smart student experience</span>
+        <h2>Register, login, and track results beautifully.</h2>
+        <p>This student portal gives learners a clean way to create accounts, access academic performance, and review all subjects in one modern dashboard.</p>
+      </div>
+
+      <div class="stats-preview">
+        <div class="preview-card">
+          <strong>8</strong>
+          <span>Subjects tracked</span>
+        </div>
+        <div class="preview-card">
+          <strong>91%</strong>
+          <span>Average performance</span>
+        </div>
+        <div class="preview-card">
+          <strong>A</strong>
+          <span>Overall grade</span>
+        </div>
+        <div class="preview-card">
+          <strong>100%</strong>
+          <span>Mobile friendly</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content-panel">
+      <section class="portal-card">
+        <header class="topbar">
+          <div>
+            <h3>Student Portal UI</h3>
+            <p>Single-file frontend template with register page, login page, and results dashboard.</p>
+          </div>
+          <div class="tab-actions">
+            <button class="tab-btn active" data-target="registerView">Register</button>
+            <button class="tab-btn" data-target="loginView">Login</button>
+            <button class="tab-btn" data-target="dashboardView">Dashboard</button>
+          </div>
+        </header>
+
+        <div id="registerView" class="view active">
+          <div class="auth-grid">
+            <div class="form-side">
+              <form class="form-card" id="registerForm">
+                <div class="section-title">
+                  <h2>Create student account</h2>
+                  <p>Register students with basic academic details and a secure password.</p>
+                </div>
+                <div class="status" id="registerStatus"></div>
+                <div class="form-grid">
+                  <div class="two-col">
+                    <div class="field">
+                      <label for="fullName">Full name</label>
+                      <input id="fullName" type="text" placeholder="Enter student name" required />
+                    </div>
+                    <div class="field">
+                      <label for="studentId">Student ID</label>
+                      <input id="studentId" type="text" placeholder="Ex: STU2026" required />
+                    </div>
+                  </div>
+                  <div class="two-col">
+                    <div class="field">
+                      <label for="email">Email address</label>
+                      <input id="email" type="email" placeholder="student@example.com" required />
+                    </div>
+                    <div class="field">
+                      <label for="department">Department</label>
+                      <select id="department" required>
+                        <option value="">Select department</option>
+                        <option>CSE</option>
+                        <option>ECE</option>
+                        <option>EEE</option>
+                        <option>MECH</option>
+                        <option>CIVIL</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="two-col">
+                    <div class="field">
+                      <label for="year">Year</label>
+                      <select id="year" required>
+                        <option value="">Select year</option>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="password">Password</label>
+                      <input id="password" type="password" placeholder="Create password" required />
+                    </div>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Register student</button>
+                  <p class="helper-text">Demo only: this frontend stores values in memory for preview. Connect it to your backend or database later.</p>
+                </div>
+              </form>
+            </div>
+            <div class="info-side">
+              <div class="section-title">
+                <h2>Why students will like it</h2>
+                <p>The layout is bright, readable, and designed to feel modern on desktop and mobile screens.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M12 4h9"></path><path d="M4 9h16"></path><path d="M4 15h16"></path></svg>
+                  </div>
+                  <div>
+                    <h4>Clean form layout</h4>
+                    <p>Two-column fields on large screens and easy stacking on phones.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"></path><path d="M3 12h18"></path></svg>
+                  </div>
+                  <div>
+                    <h4>Fast navigation</h4>
+                    <p>Register, login, and dashboard screens switch instantly in one page.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                  </div>
+                  <div>
+                    <h4>Results visibility</h4>
+                    <p>Marks, grades, averages, and progress are shown in high-contrast cards.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="loginView" class="view">
+          <div class="auth-grid">
+            <div class="form-side">
+              <form class="form-card" id="loginForm">
+                <div class="section-title">
+                  <h2>Student login</h2>
+                  <p>Students can sign in with email and password to open the results dashboard.</p>
+                </div>
+                <div class="status" id="loginStatus"></div>
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="loginEmail">Email address</label>
+                    <input id="loginEmail" type="email" placeholder="student@example.com" required />
+                  </div>
+                  <div class="field">
+                    <label for="loginPassword">Password</label>
+                    <input id="loginPassword" type="password" placeholder="Enter password" required />
+                  </div>
+                  <button class="btn btn-primary" type="submit">Login now</button>
+                  <button class="btn btn-secondary" type="button" id="demoLogin">Use demo student</button>
+                  <p class="helper-text">Demo credentials are preloaded so you can test the dashboard quickly.</p>
+                </div>
+              </form>
+            </div>
+            <div class="info-side">
+              <div class="section-title">
+                <h2>Dashboard features</h2>
+                <p>Once logged in, students can check subject-wise performance and overall progress in one place.</p>
+              </div>
+              <div class="feature-list">
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M7 8h10"></path><path d="M7 12h10"></path><path d="M7 16h6"></path></svg>
+                  </div>
+                  <div>
+                    <h4>Subject table</h4>
+                    <p>Each subject is shown with marks, percentage, and grade badge.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"></path><path d="m18 20-6-6-6 6"></path><path d="M12 4v6"></path></svg>
+                  </div>
+                  <div>
+                    <h4>Performance progress</h4>
+                    <p>Colorful progress bars make each subject easier to understand at a glance.</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>
+                  </div>
+                  <div>
+                    <h4>Responsive UI</h4>
+                    <p>The portal remains readable and attractive across laptops, tablets, and phones.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="dashboardView" class="view">
+          <div class="dashboard-layout">
+            <aside class="sidebar">
+              <div class="student-badge">
+                <p>Logged in as</p>
+                <h4 id="sidebarName">Aarav Sharma</h4>
+                <p id="sidebarMeta">CSE • 3rd Year</p>
+              </div>
+              <nav>
+                <a href="#" class="side-link active">Results overview</a>
+                <a href="#" class="side-link">All subjects</a>
+                <a href="#" class="side-link">Attendance</a>
+                <a href="#" class="side-link">Notifications</a>
+              </nav>
+              <button class="btn btn-secondary" id="logoutBtn" type="button">Logout</button>
+            </aside>
+
+            <section class="dashboard-main">
+              <div class="welcome-card">
+                <div>
+                  <span class="pill">Academic dashboard</span>
+                  <h2 id="welcomeName">Welcome back, Aarav</h2>
+                  <p>Your latest semester results and all subject scores are shown below.</p>
+                </div>
+                <div class="pill" id="overallGrade">Overall Grade A</div>
+              </div>
+
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <span>Overall percentage</span>
+                  <strong id="overallPercent">91%</strong>
+                  <small class="trend-up">+4.2% from last term</small>
+                </div>
+                <div class="stat-card">
+                  <span>CGPA estimate</span>
+                  <strong id="cgpaValue">8.9</strong>
+                  <small class="trend-up">Excellent performance</small>
+                </div>
+                <div class="stat-card">
+                  <span>Subjects passed</span>
+                  <strong id="passedCount">8 / 8</strong>
+                  <small class="trend-up">No backlogs</small>
+                </div>
+                <div class="stat-card">
+                  <span>Attendance score</span>
+                  <strong>94%</strong>
+                  <small class="trend-warn">Keep it above 90%</small>
+                </div>
+              </div>
+
+              <div class="results-grid">
+                <div class="panel">
+                  <div class="panel-head">
+                    <div>
+                      <h3>Semester results</h3>
+                      <p class="subtext">Subject-wise marks and grade details</p>
+                    </div>
+                    <button class="btn btn-secondary" type="button">Download report</button>
+                  </div>
+                  <div style="overflow:auto;">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Subject</th>
+                          <th>Code</th>
+                          <th>Marks</th>
+                          <th>Grade</th>
+                        </tr>
+                      </thead>
+                      <tbody id="resultsTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-head">
+                    <div>
+                      <h3>All subjects</h3>
+                      <p class="subtext">Quick view of every enrolled course</p>
+                    </div>
+                  </div>
+                  <div class="subject-list" id="subjectList"></div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div>
+                    <h3>Performance by subject</h3>
+                    <p class="subtext">Visible progress bars help students compare scores faster</p>
+                  </div>
+                </div>
+                <div class="progress-wrap" id="progressWrap"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const students = [
+      {
+        fullName: 'Aarav Sharma',
+        studentId: 'STU2026',
+        email: 'aarav@student.com',
+        password: '123456',
+        department: 'CSE',
+        year: '3rd Year',
+        subjects: [
+          { name: 'Mathematics III', code: 'MATH301', marks: 95 },
+          { name: 'Data Structures', code: 'CSE302', marks: 93 },
+          { name: 'Database Systems', code: 'CSE303', marks: 89 },
+          { name: 'Operating Systems', code: 'CSE304', marks: 90 },
+          { name: 'Computer Networks', code: 'CSE305', marks: 88 },
+          { name: 'Java Programming', code: 'CSE306', marks: 92 },
+          { name: 'Software Engineering', code: 'CSE307', marks: 94 },
+          { name: 'Web Technologies', code: 'CSE308', marks: 87 }
+        ]
+      }
+    ];
+
+    let activeStudent = students[0];
+
+    const views = document.querySelectorAll('.view');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tableBody = document.getElementById('resultsTableBody');
+    const subjectList = document.getElementById('subjectList');
+    const progressWrap = document.getElementById('progressWrap');
+
+    function showView(targetId) {
+      views.forEach(view => view.classList.toggle('active', view.id === targetId));
+      tabs.forEach(btn => btn.classList.toggle('active', btn.dataset.target === targetId));
+      if (targetId === 'dashboardView') renderDashboard(activeStudent);
+    }
+
+    tabs.forEach(btn => btn.addEventListener('click', () => showView(btn.dataset.target)));
+
+    function getGrade(marks) {
+      if (marks >= 90) return { label: 'A+', className: 'grade-a' };
+      if (marks >= 75) return { label: 'A', className: 'grade-b' };
+      return { label: 'B', className: 'grade-c' };
+    }
+
+    function calculateSummary(student) {
+      const total = student.subjects.reduce((sum, subject) => sum + subject.marks, 0);
+      const avg = total / student.subjects.length;
+      const cgpa = (avg / 10).toFixed(1);
+      return { avg: Math.round(avg), cgpa };
+    }
+
+    function renderDashboard(student) {
+      const { avg, cgpa } = calculateSummary(student);
+      const grade = avg >= 90 ? 'A' : avg >= 75 ? 'B' : 'C';
+
+      document.getElementById('sidebarName').textContent = student.fullName;
+      document.getElementById('sidebarMeta').textContent = `${student.department} • ${student.year}`;
+      document.getElementById('welcomeName').textContent = `Welcome back, ${student.fullName.split(' ')[0]}`;
+      document.getElementById('overallGrade').textContent = `Overall Grade ${grade}`;
+      document.getElementById('overallPercent').textContent = `${avg}%`;
+      document.getElementById('cgpaValue').textContent = cgpa;
+      document.getElementById('passedCount').textContent = `${student.subjects.length} / ${student.subjects.length}`;
+
+      tableBody.innerHTML = '';
+      subjectList.innerHTML = '';
+      progressWrap.innerHTML = '';
+
+      student.subjects.forEach(subject => {
+        const gradeInfo = getGrade(subject.marks);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${subject.name}</td>
+          <td>${subject.code}</td>
+          <td>${subject.marks}%</td>
+          <td><span class="score-badge ${gradeInfo.className}">${gradeInfo.label}</span></td>
+        `;
+        tableBody.appendChild(row);
+
+        const subjectCard = document.createElement('div');
+        subjectCard.className = 'subject-card';
+        subjectCard.innerHTML = `
+          <div>
+            <strong>${subject.name}</strong>
+            <span>${subject.code}</span>
+          </div>
+          <span class="score-badge ${gradeInfo.className}">${subject.marks}%</span>
+        `;
+        subjectList.appendChild(subjectCard);
+
+        const progressRow = document.createElement('div');
+        progressRow.className = 'progress-row';
+        progressRow.innerHTML = `
+          <div class="progress-meta">
+            <span>${subject.name}</span>
+            <strong>${subject.marks}%</strong>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar" style="width:${subject.marks}%"></div>
+          </div>
+        `;
+        progressWrap.appendChild(progressRow);
+      });
+    }
+
+    function showStatus(element, message, type) {
+      element.textContent = message;
+      element.className = `status show ${type}`;
+      setTimeout(() => { element.className = 'status'; }, 2600);
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newStudent = {
+        fullName: document.getElementById('fullName').value.trim(),
+        studentId: document.getElementById('studentId').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        department: document.getElementById('department').value,
+        year: document.getElementById('year').value,
+        subjects: [
+          { name: 'English Communication', code: 'ENG101', marks: 84 },
+          { name: 'Mathematics', code: 'MTH101', marks: 88 },
+          { name: 'Programming in C', code: 'CSE101', marks: 91 },
+          { name: 'Physics', code: 'PHY101', marks: 79 },
+          { name: 'Chemistry', code: 'CHE101', marks: 81 },
+          { name: 'Workshop Practice', code: 'WS101', marks: 86 }
+        ]
+      };
+
+      students.push(newStudent);
+      activeStudent = newStudent;
+      e.target.reset();
+      showStatus(document.getElementById('registerStatus'), 'Student registered successfully. Dashboard is ready.', 'success');
+      setTimeout(() => showView('dashboardView'), 700);
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const found = students.find(student => student.email === email && student.password === password);
+
+      if (!found) {
+        showStatus(document.getElementById('loginStatus'), 'Invalid email or password.', 'error');
+        return;
+      }
+
+      activeStudent = found;
+      showStatus(document.getElementById('loginStatus'), 'Login successful. Opening dashboard...', 'success');
+      setTimeout(() => showView('dashboardView'), 700);
+    });
+
+    document.getElementById('demoLogin').addEventListener('click', () => {
+      document.getElementById('loginEmail').value = 'aarav@student.com';
+      document.getElementById('loginPassword').value = '123456';
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => showView('loginView'));
+
+    const themeToggle = document.querySelector('[data-theme-toggle]');
+    let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+
+    function renderThemeIcon() {
+      themeToggle.innerHTML = theme === 'dark'
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      renderThemeIcon();
+    });
+
+    renderThemeIcon();
+    renderDashboard(activeStudent);
+  </script>
+</body>
+</html>
